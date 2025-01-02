@@ -1,0 +1,9 @@
+Package: com.kasper.mita
+Name: Mita
+Version: 1.0
+Architecture: iphoneos-arm
+Description: Save your lockscreen wallpaper simply like never before
+Maintainer: Artem Kasper
+Author: Artem Kasper
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
