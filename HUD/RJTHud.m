@@ -52,7 +52,8 @@ static CGFloat const RJTHudContentSize = 130.0;
             if (window.keyWindow) {
                 RJTHud *hud = [RJTHud new];
 
-                // Add 0.1-second delay before showing the HUD
+                // Add 0.1-second delay before showing the HUD. But for what? This hud has some problem with the initial display of the window due to the fact that it adjusts to the size of the text and the size of the latter is calculated manually. A hacky fix by adding a small delay and reducing the animation time solves this problem
+
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     [hud showAnimated:YES onView:window];
                 });

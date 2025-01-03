@@ -1,3 +1,11 @@
+//
+//  main.m
+//  Mita
+//
+//  Created by Artem Kasper on 05.10.2024. (last modified 03/01/2025 06:46:52 am)
+//  Copyright © 2024/2025 Artem Kasper. All rights reserved.
+//
+
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <CoreFoundation/CoreFoundation.h>
@@ -35,7 +43,7 @@ static void override_viewDidLoad(UIViewController *self, SEL _cmd) {
 
 static void handleTap(UITapGestureRecognizer *gesture) {
     if (gesture.state == UIGestureRecognizerStateEnded) {
-        CFStringRef langCode = (CFStringRef)CFLocaleGetValue(CFLocaleCopyCurrent(), kCFLocaleLanguageCode);
+        __auto_type langCode = (CFStringRef)CFLocaleGetValue(CFLocaleCopyCurrent(), kCFLocaleLanguageCode);
 
         __auto_type alertController = [UIAlertController alertControllerWithTitle:@"Mita"
                                                                                  message:(CFStringCompare(langCode, CFSTR("ru"), 0) == kCFCompareEqualTo ? @"Вы хотите сохранить текущие обои?" : @"Do you want to save current wallpaper?")
@@ -45,7 +53,7 @@ static void handleTap(UITapGestureRecognizer *gesture) {
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * _Nonnull action) {
             dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-                CFArrayRef imageArray = CPBitmapCreateImagesFromData((__bridge CFDataRef)[NSData dataWithContentsOfFile:wallpaperPath], NULL, 1, NULL);
+                __auto_type imageArray = CPBitmapCreateImagesFromData((__bridge CFDataRef)[NSData dataWithContentsOfFile:wallpaperPath], NULL, 1, NULL);
 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     RJTHud *hud = [RJTHud show];
@@ -102,16 +110,16 @@ static void handleTap(UITapGestureRecognizer *gesture) {
 
 __attribute__((constructor))
 static void Mita_load() {
-    Class cls = objc_lookUpClass("CSCoverSheetViewController");
+    __auto_type cls = objc_lookUpClass("CSCoverSheetViewController");
     if (cls) {
-        Method originalMethod = class_getInstanceMethod(cls, @selector(viewDidLoad));
+        __auto_type originalMethod = class_getInstanceMethod(cls, @selector(viewDidLoad));
 
         if (originalMethod) {
             orig_viewDidLoad = (void (*)(UIViewController *, SEL))method_getImplementation(originalMethod);
             method_setImplementation(originalMethod, (IMP)override_viewDidLoad);
         }
 
-        IMP tapIMP = imp_implementationWithBlock(^(UIViewController *self, UITapGestureRecognizer *gesture) {
+        __auto_type tapIMP = imp_implementationWithBlock(^(UIViewController *self, UITapGestureRecognizer *gesture) {
             handleTap(gesture);
         });
         class_addMethod(cls, @selector(handleTap:), tapIMP, "v@:@");
